@@ -1,0 +1,29 @@
+@startuml clases_final
+class Usuario {
+    # idUsuario: int
+    # nombre: String
+    # rol: String
+    --
+    + iniciarSesion(): boolean
+}
+
+class Administrador {
+    - nivelAcceso: int
+    --
+    + gestionarProducto(): void
+    + generarReporte(): void
+}
+
+class Producto {
+    - codigoBarras: String
+    - precioCompra: double
+    - precioVenta: double
+    - existencias: int
+    --
+    + actualizarStock(cantidad: int): void
+    + verificarMinimo(): boolean
+}
+
+Usuario <|-- Administrador
+Administrador "1" --o "*" Producto : administra
+@enduml
