@@ -1,0 +1,26 @@
+@startuml secuencia
+
+participant Cajero
+participant PuntoDeVenta
+participant Inventario
+participant Venta
+
+Cajero -> PuntoDeVenta: 1. Escanear/Agregar Producto
+activate PuntoDeVenta
+
+PuntoDeVenta -> Inventario: 2. Consultar Stock
+activate Inventario
+
+Inventario --> PuntoDeVenta: 3. Disponible
+deactivate Inventario
+
+alt Stock Suficiente
+    PuntoDeVenta -> Venta: 4. Registrar Venta y Descontar
+    Venta --> PuntoDeVenta: 5. Venta Confirmada
+else Stock Insuficiente / Alerta
+    PuntoDeVenta --> Cajero: Alerta de Stock Bajo
+end
+
+deactivate PuntoDeVenta
+
+@enduml
