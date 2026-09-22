@@ -1,0 +1,17 @@
+@startuml subescenarios
+left to right direction
+actor "Cajero / Admin" as Usuario
+rectangle "Pape Vero - Punto de Venta" {
+    usecase "Procesar Venta" as UC1
+    usecase "Verificar Stock" as UC2
+    usecase "Rechazar Venta" as UC3
+    usecase "Aprobar y Cobrar" as UC4
+}
+actor SistemaCaja
+
+Usuario --> UC1
+UC1 ..> UC2 : <<include>>
+UC3 ..> UC1 : <<extend>> [insuficiente]
+UC4 ..> UC1 : <<extend>> [suficiente]
+UC1 --> SistemaCaja
+@enduml
