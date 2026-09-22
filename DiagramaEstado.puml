@@ -1,0 +1,13 @@
+@startuml estado
+[*] --> EnRegistros
+EnRegistros : do/ Calcular total y aplicar descuento
+EnRegistros --> EnRegistros : agregarProducto()
+EnRegistros --> Cancelada : cancelarVenta()
+EnRegistros --> PendientePago : procesarVenta() [stock_ok]
+
+PendientePago --> Completada : cobrar() [pago_exitoso]
+PendientePago --> Cancelada : desistir()
+
+Cancelada --> [*]
+Completada --> [*]
+@enduml
