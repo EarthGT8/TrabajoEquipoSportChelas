@@ -1,0 +1,17 @@
+@startuml estructura_compuesta
+package "ModuloPuntoDeVenta" {
+    [LectorBarrasAdapter] as Lector
+    [CalculadorPrecios] as Calc
+    [ControladorStock] as Stock
+    [GestorImpresion] as Ticket
+
+    portIn "Entrada Escáner" as p1
+    portOut "Salida Ticket" as p2
+
+    p1 --> Lector
+    Lector -> Calc : Código Producto
+    Calc -> Stock : Validar Cantidad
+    Calc --> Ticket : Datos de Venta
+    Ticket --> p2
+}
+@enduml
