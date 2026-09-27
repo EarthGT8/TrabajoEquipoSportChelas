@@ -1,0 +1,30 @@
+@startuml paquetes
+package "com.papevero.gui" {
+    class VentanaPrincipal
+    class VentanaVentas
+    class VentanaInventario
+}
+
+package "com.papevero.modelo" {
+    class Usuario
+    class Producto
+    class Venta
+    class RegistroCaja
+}
+
+package "com.papevero.dao" {
+    class ProductoDAO
+    class VentaDAO
+    class UsuarioDAO
+}
+
+package "com.papevero.util" {
+    class ConexionBD
+    class GeneradorPDF
+}
+
+"com.papevero.gui" ..> "com.papevero.modelo"
+"com.papevero.gui" ..> "com.papevero.dao"
+"com.papevero.dao" ..> "com.papevero.modelo"
+"com.papevero.dao" ..> "com.papevero.util"
+@enduml
