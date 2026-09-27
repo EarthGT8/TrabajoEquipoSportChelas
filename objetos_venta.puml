@@ -1,0 +1,39 @@
+@startuml objetos_venta
+object "cajeroJuan : Cajero" as C1 {
+    idUsuario = 2
+    nombre = "Juan Pérez"
+}
+
+object "venta0102 : Venta" as V1 {
+    idVenta = 102
+    fecha = "2026-09-26"
+    total = 85.50
+    metodoPago = "Efectivo"
+}
+
+object "item1 : DetalleVenta" as D1 {
+    cantidad = 2
+    subtotal = 50.00
+}
+
+object "item2 : DetalleVenta" as D2 {
+    cantidad = 1
+    subtotal = 35.50
+}
+
+object "prod1 : Producto" as P1 {
+    codigo = "75012345"
+    nombre = "Cuaderno Profesional"
+}
+
+object "prod2 : Producto" as P2 {
+    codigo = "75098765"
+    nombre = "Pluma Azul"
+}
+
+C1 -- V1 : procesa
+V1 *-- D1
+V1 *-- D2
+D1 -- P1
+D2 -- P2
+@enduml
