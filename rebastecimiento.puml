@@ -1,0 +1,17 @@
+@startuml actividad_reabastecimiento
+start
+:Revisar Alertas de Stock Bajo;
+:Seleccionar Productos a Reabastecer;
+:Generar Pedido a Proveedor;
+:Recibir Mercancía;
+:Verificar Cantidades Recibidas;
+if (¿La entrega está completa y correcta?) then (Sí)
+    :Ingresar Unidades al Sistema;
+    :Actualizar Stock en Base de Datos;
+    :Marcar Alerta como Resuelta;
+else (No)
+    :Registrar Incidencia / Devolución;
+    :Actualizar Parcialmente;
+endif
+stop
+@enduml

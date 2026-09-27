@@ -1,0 +1,9 @@
+@startuml colaboracion_alerta
+object ModuloInventario
+object EvaluadorStock
+object NotificadorUI
+
+ModuloInventario -right-> EvaluadorStock : 1: verificarNivelStock(producto)
+EvaluadorStock -down-> NotificadorUI : 2: emitirAlerta(mensaje) [existencias < min]
+NotificadorUI -left-> ModuloInventario : 3: confirmarAlertaEnPantalla()
+@enduml

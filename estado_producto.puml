@@ -1,0 +1,14 @@
+@startuml estado_producto
+[*] --> Disponible
+Disponible : do/ Monitorear existencias
+Disponible --> StockBajo : [existencias <= stock_minimo]
+Disponible --> Agotado : [existencias == 0]
+
+StockBajo --> Disponible : reabastecer()
+StockBajo --> Agotado : realizarVenta() [existencias == 0]
+
+Agotado --> Disponible : reabastecer()
+Agotado --> Descontinuado : eliminarProducto()
+
+Descontinuado --> [*]
+@enduml
