@@ -1,0 +1,15 @@
+@startuml despliegue
+node "Computadora de Mostrador" {
+    artifact "Aplicación Swing / Java GUI" as App
+    artifact "Lector Código de Barras" as Lector
+    artifact "Impresora de Tickets" as Impresora
+}
+
+node "Servidor Local / Base de Datos" {
+    database "MySQL Database" as DB
+}
+
+App --> Lector : Lee entrada
+App --> Impresora : Envía impresión
+App <--> DB : Conexión JDBC (TCP/IP)
+@enduml
