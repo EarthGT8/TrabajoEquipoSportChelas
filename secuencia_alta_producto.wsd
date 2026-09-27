@@ -1,0 +1,28 @@
+@startuml secuencia_alta_producto
+participant Admin
+participant InterfazInventario
+participant ControladorInventario
+participant BaseDatos
+
+Admin -> InterfazInventario: 1. Ingresar Datos del Producto
+activate InterfazInventario
+InterfazInventario -> ControladorInventario: 2. Crear Producto
+activate ControladorInventario
+ControladorInventario -> BaseDatos: 3. Verificar Código de Barras
+activate BaseDatos
+
+alt Código Único
+    BaseDatos --> ControladorInventario: No existe
+    ControladorInventario -> BaseDatos: 4. Guardar Producto
+    BaseDatos --> ControladorInventario: Confirmación
+    ControladorInventario --> InterfazInventario: Producto Registrado
+    InterfazInventario --> Admin: Éxito
+else Código Duplicado
+    BaseDatos --> ControladorInventario: Existe
+    ControladorInventario --> InterfazInventario: Error Duplicado
+    InterfazInventario --> Admin: Mostrar Alerta
+end
+deactivate BaseDatos
+deactivate ControladorInventario
+deactivate InterfazInventario
+@enduml
