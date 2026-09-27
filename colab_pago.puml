@@ -1,0 +1,11 @@
+@startuml colaboracion_pago
+object InterfazVenta
+object ControladorPago
+object ModuloInventario
+object RegistroCaja
+
+InterfazVenta -down-> ControladorPago : 1: enviarMontoTotal()
+ControladorPago -right-> RegistroCaja : 2: registrarEntradaDinero()
+ControladorPago -down-> ModuloInventario : 3: solicitarDescuentoStock()
+ModuloInventario -left-> InterfazVenta : 4: notificarExito()
+@enduml

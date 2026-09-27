@@ -1,0 +1,28 @@
+@startuml actividad_venta
+start
+:Escanear / Buscar Producto;
+if (¿Existe en inventario?) then (Sí)
+    if (¿Stock disponible?) then (Sí)
+        :Agregar a la Lista de Venta;
+        :Calcular Subtotal;
+    else (No)
+        :Mostrar Alerta "Sin Stock";
+    endif
+else (No)
+    :Mostrar Alerta "Producto no Encontrado";
+endif
+
+if (¿Hay más productos?) then (Sí)
+    repeat :Registrar siguiente producto;
+    backward:Actualizar carrito;
+    repeat while (¿Continúa agregando?) is (Sí)
+endif
+
+:Aplicar Descuento Manual (Opcional);
+:Calcular Total A Pagar;
+:Seleccionar Método de Pago;
+:Registrar Transacción en Caja;
+:Descontar Inventario;
+:Emitir Ticket;
+stop
+@enduml

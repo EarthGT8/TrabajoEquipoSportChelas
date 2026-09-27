@@ -1,0 +1,7 @@
+@startuml estado_caja
+[*] --> Cerrada
+Cerrada --> Abierta : registrarApertura(montoInicial)
+Abierta --> Abierta : registrarVenta() / registrarEgreso()
+Abierta --> EnArqueo : solicitarCierre()
+EnArqueo --> Cerrada : confirmarCuadre()
+@enduml
