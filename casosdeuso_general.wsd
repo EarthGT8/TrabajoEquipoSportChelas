@@ -1,0 +1,23 @@
+@startuml casosdeuso_general
+left to right direction
+actor Admin
+actor Cajero
+
+rectangle "Pape Vero" {
+    usecase "Autenticarse" as UC_Login
+    usecase "Procesar Venta" as UC_Venta
+    usecase "Apertura / Cierre Caja" as UC_Caja
+    usecase "Gestionar Productos" as UC_Inv
+    usecase "Generar Reportes" as UC_Reportes
+}
+
+Cajero --> UC_Login
+Cajero --> UC_Venta
+Cajero --> UC_Caja
+
+Admin --> UC_Login
+Admin --> UC_Venta
+Admin --> UC_Caja
+Admin --> UC_Inv
+Admin --> UC_Reportes
+@enduml
