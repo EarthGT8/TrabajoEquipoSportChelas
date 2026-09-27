@@ -1,0 +1,21 @@
+@startuml secuencia_reporte
+participant Admin
+participant InterfazReportes
+participant GeneradorReportes
+participant BaseDatos
+
+Admin -> InterfazReportes: 1. Seleccionar Rango (Diario/Semanal/Mensual)
+activate InterfazReportes
+InterfazReportes -> GeneradorReportes: 2. Solicitar Informe
+activate GeneradorReportes
+GeneradorReportes -> BaseDatos: 3. Consultar Ventas y Ganancias
+activate BaseDatos
+BaseDatos --> GeneradorReportes: Registros de Ventas
+deactivate BaseDatos
+
+GeneradorReportes -> GeneradorReportes: 4. Compilar Estadísticas y Productos Top
+GeneradorReportes --> InterfazReportes: 5. Entregar Reporte Resumido
+InterfazReportes --> Admin: Mostrar Pantalla de Reporte
+deactivate GeneradorReportes
+deactivate InterfazReportes
+@enduml
