@@ -1,0 +1,30 @@
+@startuml componentes
+package "Capa de Presentación" {
+    [UI Punto de Venta]
+    [UI Gestión Inventario]
+    [UI Reportes]
+}
+
+package "Capa de Lógica de Negocio" {
+    [Gestor de Ventas]
+    [Gestor de Inventario]
+    [Modulo de Caja]
+    [Motor de Alertas]
+}
+
+package "Capa de Datos" {
+    [Base de Datos Relacional]
+}
+
+[UI Punto de Venta] ..> [Gestor de Ventas]
+[UI Gestión Inventario] ..> [Gestor de Inventario]
+[UI Reportes] ..> [Gestor de Ventas]
+[UI Reportes] ..> [Gestor de Inventario]
+
+[Gestor de Ventas] ..> [Modulo de Caja]
+[Gestor de Inventario] ..> [Motor de Alertas]
+
+[Gestor de Ventas] --> [Base de Datos Relacional]
+[Gestor de Inventario] --> [Base de Datos Relacional]
+[Modulo de Caja] --> [Base de Datos Relacional]
+@enduml
