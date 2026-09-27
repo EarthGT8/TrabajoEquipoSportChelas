@@ -1,0 +1,25 @@
+@startuml secuencia_login
+participant Usuario
+participant InterfazLogin
+participant ControladorSesion
+participant BaseDatos
+
+Usuario -> InterfazLogin: 1. Ingresar Credenciales
+activate InterfazLogin
+InterfazLogin -> ControladorSesion: 2. Validar Datos
+activate ControladorSesion
+ControladorSesion -> BaseDatos: 3. Buscar Usuario
+activate BaseDatos
+BaseDatos --> ControladorSesion: 4. Retornar Rol / Estado
+deactivate BaseDatos
+
+alt Credenciales Válidas
+    ControladorSesion --> InterfazLogin: 5. Acceso Concedido
+    InterfazLogin --> Usuario: Redirigir a Panel Principal
+else Credenciales Inválidas
+    ControladorSesion --> InterfazLogin: 5. Error
+    InterfazLogin --> Usuario: Mostrar Mensaje de Error
+end
+deactivate ControladorSesion
+deactivate InterfazLogin
+@enduml
