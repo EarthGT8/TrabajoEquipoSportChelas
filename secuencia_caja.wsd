@@ -1,0 +1,28 @@
+@startuml secuencia_caja
+participant Cajero
+participant InterfazCaja
+participant ModuloCaja
+participant BaseDatos
+
+Cajero -> InterfazCaja: 1. Ingresar Monto Inicial
+activate InterfazCaja
+InterfazCaja -> ModuloCaja: 2. Registrar Apertura
+activate ModuloCaja
+ModuloCaja -> BaseDatos: 3. Guardar Estado Caja (Abierta)
+deactivate ModuloCaja
+InterfazCaja --> Cajero: Caja Abierta
+
+... Durante la jornada operacional ...
+
+Cajero -> InterfazCaja: 4. Solicitar Cierre de Caja
+InterfazCaja -> ModuloCaja: 5. Calcular Total Calculado
+activate ModuloCaja
+ModuloCaja -> BaseDatos: 6. Obtener Suma de Ventas
+activate BaseDatos
+BaseDatos --> ModuloCaja: Total Ventas
+deactivate BaseDatos
+ModuloCaja --> InterfazCaja: Mostrar Cuadre
+deactivate ModuloCaja
+InterfazCaja --> Cajero: Resumen de Cierre Generado
+deactivate InterfazCaja
+@enduml
