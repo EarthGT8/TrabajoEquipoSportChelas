@@ -1,4 +1,4 @@
-# 🛒 Punto de Venta - Papelería "Vero"
+#  Punto de Venta - Papelería "Vero"
 
 Proyecto de la materia de **Paradigmas de Programación** desarrollado por el equipo **SportChelas**. Sistema de Punto de Venta (POS), gestión de inventario y administración de proveedores construido con **Java y Spring Boot**.
 
@@ -11,8 +11,8 @@ Cada integrante desarrolló su módulo de forma independiente en su rama dedicad
 | Integrante | Usuario GitHub | Rama | Módulo Asignado |
 | :--- | :--- | :--- | :--- |
 | **Ángel Sánchez** | [@EarthGT8](https://github.com/EarthGT8) | [`feature/punto-venta-caja`](../../tree/feature/punto-venta-caja) | Caja Registradora, Ventas y Tickets (`/pos`) |
-| **Gustavo** | [@gssttvv5](https://github.com/gssttvv5) | [`feature/inventario-productos`](../../tree/feature/inventario-productos) | Inventario, Productos y Categorías (`/inventario`) |
-| **Emmanuel** | [@emmanuel471419](https://github.com/emmanuel471419) | [`feature/usuarios-proveedores`](../../tree/feature/usuarios-proveedores) | Usuarios y Proveedores (`/proveedores`) |
+| **Gustavo Romero** | [@gssttvv5](https://github.com/gssttvv5) | [`feature/inventario-productos`](../../tree/feature/inventario-productos) | Inventario, Productos y Categorías (`/inventario`) |
+| **Emmanuel Sánchez** | [@emmanuel471419](https://github.com/emmanuel471419) | [`feature/usuarios-proveedores`](../../tree/feature/usuarios-proveedores) | Usuarios y Proveedores (`/proveedores`) |
 
 ---
 
@@ -22,7 +22,7 @@ Los **20 diagramas de casos de uso (`.puml`)** se encuentran organizados en:
 
 ---
 
-## 🛠️ Tecnologías y Paradigmas Aplicados
+##  Tecnologías y Paradigmas Aplicados
 * **Backend:** Java 17 + Spring Boot 4 (Spring Web, Spring Data JPA, Lombok)
 * **Frontend:** Thymeleaf + Bootstrap 5
 * **Base de Datos:** H2 Database embebida en archivo local (`./data/papeleria_vero_db`)
@@ -30,7 +30,7 @@ Los **20 diagramas de casos de uso (`.puml`)** se encuentran organizados en:
 
 ---
 
-## 🚀 Cómo ejecutar el proyecto
+##  Cómo ejecutar el proyecto
 
 1. Clonar el repositorio:
    ```bash
