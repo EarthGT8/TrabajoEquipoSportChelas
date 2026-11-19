@@ -10,35 +10,40 @@
 <nav class="navbar navbar-dark bg-primary mb-4">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">📦 Papelería "Vero" - Gestión de Proveedores</span>
-        <!-- Botón para regresar al punto de venta -->
-        <a href="/pos" class="btn btn-outline-light btn-sm">Ir a Caja</a>
+        <div>
+            <a href="/pos" class="btn btn-outline-light btn-sm me-2">Ir a Caja</a>
+            <a href="/inventario" class="btn btn-outline-light btn-sm">Inventario</a>
+        </div>
     </div>
 </nav>
 
 <div class="container">
     <div class="row">
-        
         <!-- Panel Izquierdo: Formulario de Alta -->
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Nuevo Proveedor</h5>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form th:action="@{/proveedores/guardar}" th:object="${nuevoProveedor}" method="post">
                         <div class="mb-3">
                             <label class="form-label">Empresa</label>
-                            <input type="text" class="form-control" placeholder="Ej. BIC, Scribe...">
+                            <input type="text" th:field="*{empresa}" class="form-control" placeholder="Ej. BIC, Scribe..." required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contacto</label>
-                            <input type="text" class="form-control" placeholder="Nombre del vendedor">
+                            <input type="text" th:field="*{nombreContacto}" class="form-control" placeholder="Nombre del vendedor" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" placeholder="10 dígitos">
+                            <input type="tel" th:field="*{telefono}" class="form-control" placeholder="10 dígitos">
                         </div>
-                        <button type="button" class="btn btn-primary w-100">Guardar Proveedor</button>
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" th:field="*{email}" class="form-control" placeholder="ventas@empresa.com">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Proveedor</button>
                     </form>
                 </div>
             </div>
@@ -52,7 +57,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm">
+                        <table class="table table-hover table-sm align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
@@ -69,10 +74,10 @@
                                     <td th:text="${proveedor.nombreContacto}">Juan Pérez</td>
                                     <td th:text="${proveedor.telefono}">555-1234</td>
                                     <td>
-                                        <button class="btn btn-sm btn-outline-secondary">Editar</button>
+                                        <a th:href="@{/proveedores/eliminar/{id}(id=${proveedor.id})}"
+                                           class="btn btn-sm btn-outline-danger">Eliminar</a>
                                     </td>
                                 </tr>
-                                <!-- Fila de ejemplo si la BD está vacía -->
                                 <tr th:if="${#lists.isEmpty(listaProveedores)}">
                                     <td colspan="5" class="text-center text-muted">No hay proveedores registrados aún</td>
                                 </tr>
@@ -82,7 +87,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
