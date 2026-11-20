@@ -57,6 +57,8 @@ El desarrollo colaborativo se realizó mediante ramas independientes integradas 
    Abrir en el navegador (puerto 8081):Acceso principal (Login): http://localhost:8081/loginConsola H2: http://localhost:8081/h2-consoleJDBC URL: jdbc:h2:file:./data/papeleria_vero_dbUser Name: saPassword: (vacío)
    
 ## Credenciales de Prueba Precargadas
-   Al iniciar la aplicación por primera vez (UsuarioInitializer), se crean automáticamente los siguientes accesos con contraseñas cifradas en SHA-256:RolUsuarioContraseñaRutas PermitidasAdministradoradminadmin123/dashboard, /pos, /pos/ticket/{id}, /inventario, /proveedores, /usuarios, /reportesCajerocajerocajero123/pos y /pos/ticket/{id} (cualquier otra ruta administrativa es bloqueada)   
+   Al iniciar la aplicación por primera vez (UsuarioInitializer), se crean automáticamente los siguientes accesos con contraseñas cifradas en SHA-256:
+   Rol Usuario Contraseña Rutas 
+   Permitidas Administrador adminadmin123/dashboard, /pos, /pos/ticket/{id}, /inventario, /proveedores, /usuarios, /reportesCajerocajerocajero123/pos y /pos/ticket/{id} (cualquier otra ruta administrativa es bloqueada)   
    
    
