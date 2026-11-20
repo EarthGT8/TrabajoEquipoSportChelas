@@ -20,8 +20,9 @@ public class AuthController {
 
     @GetMapping("/")
     public String inicio(HttpSession session) {
-        if (session.getAttribute("usuarioLogueado") != null) {
-            return "redirect:/pos";
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuario != null) {
+            return "ADMIN".equalsIgnoreCase(usuario.getRol()) ? "redirect:/dashboard" : "redirect:/pos";
         }
         return "redirect:/login";
     }
@@ -49,7 +50,7 @@ public class AuthController {
             Usuario usuario = usuarioService.autenticar(username, password);
             session.setAttribute("usuarioLogueado", usuario);
             accesoExitoso = true;
-            return "redirect:/pos";
+            return "ADMIN".equalsIgnoreCase(usuario.getRol()) ? "redirect:/dashboard" : "redirect:/pos";
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
             model.addAttribute("usernameIngresado", username);

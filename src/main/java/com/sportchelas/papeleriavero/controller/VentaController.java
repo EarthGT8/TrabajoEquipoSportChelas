@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,21 @@ public class VentaController {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error inesperado al procesar la venta."));
         } finally {
             System.out.println("[AUDITORIA CAJA] Intento de cobro finalizado | Exitosa: " + ventaExitosa);
+        }
+    }
+
+    @GetMapping("/ticket/{id}")
+    public String verTicket(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Venta venta = ventaService.buscarPorId(id)
+                    .orElseThrow(() -> new IllegalArgumentException("El ticket #" + id + " no existe."));
+            model.addAttribute("venta", venta);
+            return "ticket";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
+            return "redirect:/pos";
+        } finally {
+            System.out.println("[AUDITORIA CAJA] Consulta de ticket ID: " + id);
         }
     }
 }

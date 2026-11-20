@@ -16,6 +16,10 @@
         </button>
         <div class="collapse navbar-collapse" id="menuPrincipal">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                </li>
+                <li class="nav-item" th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}">
+                   <a class="nav-link" href="/dashboard">Dashboard</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active fw-semibold" href="/pos">Caja (POS)</a>
                 </li>
@@ -27,6 +31,8 @@
                 </li>
                 <li class="nav-item" th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}">
                     <a class="nav-link" href="/usuarios">Usuarios</a>
+                <li class="nav-item" th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}">
+                   <a class="nav-link" href="/reportes">Reportes</a>
                 </li>
             </ul>
             <div class="d-flex align-items-center gap-2 text-white" th:if="${session.usuarioLogueado != null}">
@@ -142,7 +148,7 @@
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">Paga con ($)</label>
-                            <input type="number" step="0.50" id="pagoCon" class="form-control" placeholder="0.00" oninput="actualizarCambio()">
+                            <input type="number" min="0" step="0.50" id="pagoCon" class="form-control" placeholder="0.00" oninput="actualizarCambio()">
                         </div>
                         <div class="col-6">
                             <label class="form-label small text-muted mb-1">Cambio</label>
@@ -179,14 +185,16 @@
                             <th>Total Cobrado</th>
                         </tr>
                     </thead>
+                    <th>Comprobante</th>
                     <tbody>
                         <tr th:each="venta : ${historialVentas}">
                             <td th:text="'#' + ${venta.id}">#1</td>
                             <td th:text="${#temporals.format(venta.fechaHora, 'dd/MM/yyyy HH:mm:ss')}">19/11/2026 12:00</td>
                             <td class="fw-bold text-success" th:text="'$' +${#numbers.formatDecimal(venta.total, 1, 2)}">$50.00</td>
+                            <td> <a th:href="@{/pos/ticket/{id}(id=${venta.id})}" class="btn btn-sm btn-outline-primary">Ver Ticket</a></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(historialVentas)}">
-                            <td colspan="3" class="text-center text-muted">Aún no se registran ventas en caja.</td>
+                            <td colspan="4" class="text-center text-muted">Aún no se registran ventas en caja.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -317,10 +325,21 @@
             return;
         }
 
-        const total = calcularTotal();
-        const pago = parseFloat(document.getElementById('pagoCon').value) || 0;
-        if (pago > 0 && pago < total) {
-            mostrarAlerta('El monto recibido es menor al total de la venta.', 'danger');
+        const total = Math.round(calcularTotal() * 100) / 100;
+        const inputPago = document.getElementById('pagoCon');
+        const valorRaw = inputPago.value.trim();
+        const pago = parseFloat(valorRaw);
+
+        if (valorRaw === '' || isNaN(pago) || pago <= 0) {
+            mostrarAlerta('Debes ingresar el monto con el que paga el cliente antes de cobrar.', 'danger');
+            inputPago.focus();
+            return;
+        }
+
+        if (pago < total) {
+            const faltante = (total - pago).toFixed(2);
+            mostrarAlerta(`Monto insuficiente. Faltan $${faltante} para completar la compra.`, 'danger');
+            inputPago.focus();
             return;
         }
 

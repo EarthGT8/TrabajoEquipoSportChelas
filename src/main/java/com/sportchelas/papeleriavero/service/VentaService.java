@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VentaService {
@@ -81,5 +82,9 @@ public class VentaService {
                 .stream()
                 .mapToDouble(v -> v.getTotal() != null ? v.getTotal() : 0.0)
                 .sum();
+    }
+
+    public Optional<Venta> buscarPorId(Long id) {
+        return ventaRepository.findById(id);
     }
 }

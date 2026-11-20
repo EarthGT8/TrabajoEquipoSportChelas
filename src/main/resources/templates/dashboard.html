@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Papelería Vero</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/dashboard">🛒 Papelería "Vero"</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active fw-semibold" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pos">Caja (POS)</a></li>
+                <li class="nav-item"><a class="nav-link" href="/inventario">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link" href="/proveedores">Proveedores</a></li>
+                <li class="nav-item"><a class="nav-link" href="/usuarios">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link" href="/reportes">Reportes</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-2 text-white" th:if="${session.usuarioLogueado != null}">
+                <span class="small">
+                    👤 <strong th:text="${session.usuarioLogueado.nombreCompleto}">Admin</strong>
+                    <span class="badge bg-light text-primary ms-1" th:text="${session.usuarioLogueado.rol}">ADMIN</span>
+                </span>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h3 class="mb-0">Panel de Control</h3>
+            <small class="text-muted">Resumen general de Papelería "Vero"</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/pos" class="btn btn-success">Abrir Caja</a>
+            <a href="/reportes" class="btn btn-outline-primary">Ver Reportes</a>
+        </div>
+    </div>
+
+    <!-- Tarjetas de métricas -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Ingresos en Caja</div>
+                    <h3 class="text-success mb-0" th:text="'$' + ${#numbers.formatDecimal(totalCaja, 1, 2)}">$0.00</h3>
+                    <small class="text-muted" th:text="${totalVentas} + ' tickets cobrados'">0 tickets</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Productos en Catálogo</div>
+                    <h3 class="text-primary mb-0" th:text="${totalProductos}">0</h3>
+                    <small class="text-muted"><a href="/inventario" class="text-decoration-none">Gestionar inventario →</a></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Alertas de Stock Bajo</div>
+                    <h3 class="text-danger mb-0" th:text="${#lists.size(productosStockBajo)}">0</h3>
+                    <small class="text-muted">Artículos por reabastecer</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Proveedores / Usuarios</div>
+                    <h3 class="text-dark mb-0" th:text="${totalProveedores} + ' / ' + ${totalUsuarios}">0 / 0</h3>
+                    <small class="text-muted"><a href="/proveedores" class="text-decoration-none">Directorio →</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Últimas ventas -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">🧾 Últimas Ventas</h5>
+                    <a href="/reportes" class="btn btn-sm btn-outline-primary">Ver todas</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="v : ${ultimasVentas}">
+                                    <td th:text="'#' + ${v.id}">#1</td>
+                                    <td th:text="${#temporals.format(v.fechaHora, 'dd/MM/yyyy HH:mm')}">19/11/2026</td>
+                                    <td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(v.total, 1, 2)}">$60.00</td>
+                                    <td>
+                                        <a th:href="@{/pos/ticket/{id}(id=${v.id})}" class="btn btn-sm btn-outline-secondary">Ticket</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(ultimasVentas)}">
+                                    <td colspan="4" class="text-center text-muted py-3">Sin ventas registradas todavía.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos con stock bajo -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">⚠️ Productos con Stock Bajo</h5>
+                    <a href="/inventario" class="btn btn-sm btn-outline-danger">Surtir</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Stock</th>
+                                    <th>Mínimo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${productosStockBajo}">
+                                    <td th:text="${p.nombre}">Libreta</td>
+                                    <td><span class="badge bg-danger" th:text="${p.stock}">2</span></td>
+                                    <td th:text="${p.stockMinimo != null ? p.stockMinimo : 5}">5</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(productosStockBajo)}">
+                                    <td colspan="3" class="text-center text-success py-3">Todo el inventario tiene stock saludable.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -15,15 +15,15 @@ public class AuthInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession(false);
         Usuario usuario = (session != null) ? (Usuario) session.getAttribute("usuarioLogueado") : null;
 
-        // 1. Si no hay sesión activa, bloquea el acceso por URL directa
         if (usuario == null) {
             response.sendRedirect("/login?error=sesion");
             return false;
         }
 
-        // 2. Control por roles: solo ADMIN accede a Inventario, Proveedores y Usuarios
         String ruta = request.getRequestURI();
-        boolean esRutaAdmin = ruta.startsWith("/inventario")
+        boolean esRutaAdmin = ruta.startsWith("/dashboard")
+                || ruta.startsWith("/reportes")
+                || ruta.startsWith("/inventario")
                 || ruta.startsWith("/proveedores")
                 || ruta.startsWith("/usuarios");
 

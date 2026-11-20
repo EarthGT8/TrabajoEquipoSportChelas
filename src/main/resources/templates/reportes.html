@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Papelería Vero</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #fff !important; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm no-print">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/dashboard">🛒 Papelería "Vero"</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pos">Caja (POS)</a></li>
+                <li class="nav-item"><a class="nav-link" href="/inventario">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link" href="/proveedores">Proveedores</a></li>
+                <li class="nav-item"><a class="nav-link" href="/usuarios">Usuarios</a></li>
+                <li class="nav-item"><a class="nav-link active fw-semibold" href="/reportes">Reportes</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-2 text-white" th:if="${session.usuarioLogueado != null}">
+                <span class="small">
+                    👤 <strong th:text="${session.usuarioLogueado.nombreCompleto}">Admin</strong>
+                    <span class="badge bg-light text-primary ms-1" th:text="${session.usuarioLogueado.rol}">ADMIN</span>
+                </span>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h3 class="mb-0">📊 Reporte General de Ventas e Inventario</h3>
+            <small class="text-muted">Papelería "Vero" — Corte financiero y desglose de tickets</small>
+        </div>
+        <button type="button" class="btn btn-primary no-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+
+    <!-- Resumen financiero -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-3">
+                <small class="text-muted">Total Vendido</small>
+                <h3 class="text-success mb-0" th:text="'$' + ${#numbers.formatDecimal(totalCaja, 1, 2)}">$0.00</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-3">
+                <small class="text-muted">Tickets Emitidos</small>
+                <h3 class="text-primary mb-0" th:text="${totalVentas}">0</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-3">
+                <small class="text-muted">Valor Estimado del Inventario</small>
+                <h3 class="text-dark mb-0" th:text="'$' + ${#numbers.formatDecimal(valorInventario, 1, 2)}">$0.00</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desglose completo de ventas -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Historial Detallado de Ventas</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ticket #</th>
+                            <th>Fecha y Hora</th>
+                            <th>Artículos Vendidos</th>
+                            <th>Total</th>
+                            <th class="no-print">Comprobante</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="venta : ${historialVentas}">
+                            <td class="fw-bold" th:text="'#' + ${venta.id}">#1</td>
+                            <td th:text="${#temporals.format(venta.fechaHora, 'dd/MM/yyyy HH:mm:ss')}">19/11/2026</td>
+                            <td>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li th:each="det : ${venta.detalles}">
+                                        <span th:text="${det.cantidad} + 'x ' + ${det.producto.nombre} + ' ($' + ${#numbers.formatDecimal(det.subtotal, 1, 2)} + ')'"></span>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 2)}">$60.00</td>
+                            <td class="no-print">
+                                <a th:href="@{/pos/ticket/{id}(id=${venta.id})}" class="btn btn-sm btn-outline-primary">Ver Ticket</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(historialVentas)}">
+                            <td colspan="5" class="text-center text-muted py-3">No hay ventas registradas para reportar.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte de reabastecimiento -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">⚠️ Reporte de Productos por Reabastecer</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Stock Actual</th>
+                            <th>Stock Mínimo</th>
+                            <th>Precio Venta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${productosStockBajo}">
+                            <td th:text="${p.codigoBarras}">750123</td>
+                            <td th:text="${p.nombre}">Libreta</td>
+                            <td><span class="badge bg-danger" th:text="${p.stock}">2</span></td>
+                            <td th:text="${p.stockMinimo != null ? p.stockMinimo : 5}">5</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 2)}">$30.00</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productosStockBajo)}">
+                            <td colspan="5" class="text-center text-success py-3">Ningún producto por debajo del stock mínimo.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
