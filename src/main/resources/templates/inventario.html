@@ -2,40 +2,65 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario - Papelería Vero</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">📚 Papelería "Vero" - Control de Inventario</span>
-        <div>
-            <a href="/pos" class="btn btn-outline-light btn-sm me-2">Ir a Caja</a>
-            <a href="/proveedores" class="btn btn-outline-light btn-sm">Proveedores</a>
+        <a class="navbar-brand fw-bold" href="/pos">🛒 Papelería "Vero"</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/pos">Caja (POS)</a></li>
+                <li class="nav-item"><a class="nav-link active fw-semibold" href="/inventario">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link" href="/proveedores">Proveedores</a></li>
+                <li class="nav-item"><a class="nav-link" href="/usuarios">Usuarios</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-2 text-white" th:if="${session.usuarioLogueado != null}">
+                <span class="small">
+                    👤 <strong th:text="${session.usuarioLogueado.nombreCompleto}">Admin</strong>
+                    <span class="badge bg-light text-primary ms-1" th:text="${session.usuarioLogueado.rol}">ADMIN</span>
+                </span>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
+            </div>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <div class="row">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
-        <!-- Panel Izquierdo: Altas de Productos y Categorías -->
-        <div class="col-md-4">
-            <!-- Formulario Nuevo Producto -->
+    <div class="row">
+        <!-- Panel Izquierdo: Alta / Edición de Producto y Categorías -->
+        <div class="col-lg-4 mb-4">
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Nuevo Producto</h5>
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" th:text="${modoEdicion} ? 'Editar Producto' : 'Nuevo Producto'">Nuevo Producto</h5>
+                    <a th:if="${modoEdicion}" href="/inventario" class="btn btn-sm btn-outline-secondary">Cancelar</a>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/inventario/guardar}" th:object="${nuevoProducto}" method="post">
+                    <form th:action="@{/inventario/guardar}" th:object="${nuevoProducto}" method="post" novalidate>
+                        <input type="hidden" th:field="*{id}">
+
                         <div class="mb-2">
                             <label class="form-label">Código de Barras</label>
-                            <input type="text" th:field="*{codigoBarras}" class="form-control" placeholder="Ej. 750123456" required>
+                            <input type="text" th:field="*{codigoBarras}" class="form-control" placeholder="Ej. 750123456">
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Nombre del Producto</label>
-                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Libreta Scribe" required>
+                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Libreta Scribe">
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Categoría</label>
@@ -43,7 +68,10 @@
                                 <option value="">-- Sin categoría --</option>
                                 <option th:each="cat : ${listaCategorias}"
                                         th:value="${cat.id}"
-                                        th:text="${cat.nombre}">Cuadernos</option>
+                                        th:text="${cat.nombre}"
+                                        th:selected="${nuevoProducto.categoria != null and nuevoProducto.categoria.id == cat.id}">
+                                    Cuadernos
+                                </option>
                             </select>
                         </div>
                         <div class="row">
@@ -53,33 +81,36 @@
                             </div>
                             <div class="col-6 mb-2">
                                 <label class="form-label">Precio Venta</label>
-                                <input type="number" step="0.50" th:field="*{precio}" class="form-control" placeholder="0.00" required>
+                                <input type="number" step="0.50" th:field="*{precio}" class="form-control" placeholder="0.00">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <label class="form-label">Stock Actual</label>
-                                <input type="number" th:field="*{stock}" class="form-control" placeholder="10" required>
+                                <input type="number" th:field="*{stock}" class="form-control" placeholder="10">
                             </div>
                             <div class="col-6 mb-3">
                                 <label class="form-label">Stock Mínimo</label>
-                                <input type="number" th:field="*{stockMinimo}" class="form-control" value="5" required>
+                                <input type="number" th:field="*{stockMinimo}" class="form-control" placeholder="5">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Guardar Producto</button>
+                        <button type="submit" class="btn w-100"
+                                th:classappend="${modoEdicion} ? 'btn-warning' : 'btn-primary'"
+                                th:text="${modoEdicion} ? 'Actualizar Producto' : 'Guardar Producto'">
+                            Guardar Producto
+                        </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Formulario Rápido de Categoría -->
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
                     <h6 class="mb-0">Nueva Categoría</h6>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/inventario/categorias/guardar}" th:object="${nuevaCategoria}" method="post">
+                    <form th:action="@{/inventario/categorias/guardar}" th:object="${nuevaCategoria}" method="post" novalidate>
                         <div class="input-group">
-                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Escritura, Cuadernos..." required>
+                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Escritura, Cuadernos...">
                             <button type="submit" class="btn btn-outline-primary">Agregar</button>
                         </div>
                     </form>
@@ -87,11 +118,11 @@
             </div>
         </div>
 
-        <!-- Panel Derecho: Tabla de Productos -->
-        <div class="col-md-8">
+        <!-- Panel Derecho: Catálogo de Productos -->
+        <div class="col-lg-8 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0">Catálogo de Productos</h5>
+                    <h5 class="mb-0">📚 Catálogo de Productos</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -103,7 +134,7 @@
                                     <th>Categoría</th>
                                     <th>Precio</th>
                                     <th>Stock</th>
-                                    <th>Acción</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,20 +142,23 @@
                                     <td th:text="${prod.codigoBarras}">750123</td>
                                     <td th:text="${prod.nombre}">Libreta</td>
                                     <td th:text="${prod.categoria != null ? prod.categoria.nombre : 'General'}">Cuadernos</td>
-                                    <td th:text="'$' + ${prod.precio}">$28.50</td>
+                                    <td th:text="'$' + ${#numbers.formatDecimal(prod.precio, 1, 2)}">$28.50</td>
                                     <td>
                                         <span th:text="${prod.stock}"
-                                              th:classappend="${prod.stock <= prod.stockMinimo} ? 'badge bg-danger' : 'badge bg-success'">
+                                              th:classappend="${prod.stock <= (prod.stockMinimo != null ? prod.stockMinimo : 5)} ? 'badge bg-danger' : 'badge bg-success'">
                                             10
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="text-nowrap">
+                                        <a th:href="@{/inventario/editar/{id}(id=${prod.id})}"
+                                           class="btn btn-sm btn-outline-warning me-1">Editar</a>
                                         <a th:href="@{/inventario/eliminar/{id}(id=${prod.id})}"
-                                           class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('¿Seguro que deseas eliminar este producto?');">Eliminar</a>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(listaProductos)}">
-                                    <td colspan="6" class="text-center text-muted">No hay productos registrados en el inventario</td>
+                                    <td colspan="6" class="text-center text-muted py-3">No hay productos registrados en el inventario.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -132,9 +166,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -25,7 +25,10 @@ public class VentaController {
     }
 
     @GetMapping
-    public String mostrarCaja(Model model) {
+    public String mostrarCaja(@RequestParam(required = false) String error, Model model) {
+        if ("sin_permiso".equals(error)) {
+            model.addAttribute("mensajeError", "Acceso denegado: tu rol de CAJERO solo tiene permiso para usar la Caja.");
+        }
         model.addAttribute("listaProductos", productoRepository.findAll());
         model.addAttribute("historialVentas", ventaService.obtenerHistorialVentas());
         model.addAttribute("totalCaja", ventaService.calcularTotalCaja());
@@ -35,8 +38,10 @@ public class VentaController {
     @PostMapping("/cobrar")
     @ResponseBody
     public ResponseEntity<?> cobrarVenta(@RequestBody List<ItemCarrito> items) {
-    try {
+        boolean ventaExitosa = false;
+        try {
             Venta ventaGuardada = ventaService.procesarVenta(items);
+            ventaExitosa = true;
             return ResponseEntity.ok(Map.of(
                     "ventaId", ventaGuardada.getId(),
                     "total", ventaGuardada.getTotal(),
@@ -44,6 +49,10 @@ public class VentaController {
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error inesperado al procesar la venta."));
+        } finally {
+            System.out.println("[AUDITORIA CAJA] Intento de cobro finalizado | Exitosa: " + ventaExitosa);
         }
     }
 }
