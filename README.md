@@ -1,4 +1,4 @@
-¿# 🛒 Punto de Venta — Papelería "Vero"
+# 🛒 Punto de Venta — Papelería "Vero"
 
 Sistema web de Punto de Venta (POS), gestión de inventario, proveedores, usuarios, reportes ejecutivos y emisión de tickets desarrollado para la unidad de aprendizaje **Paradigmas de Programación I (UAEMéx)** por el equipo **SportChelas**.
 
