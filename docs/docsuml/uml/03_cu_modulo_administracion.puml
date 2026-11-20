@@ -1,0 +1,28 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+left to right direction
+
+actor "Administrador" as A
+
+rectangle "Módulo de Administración y Control" {
+  usecase "Visualizar métricas en\nDashboard (/dashboard)" as UA1
+  usecase "Registrar, editar y eliminar\nproductos (/inventario)" as UA2
+  usecase "Registrar categorías\nde productos" as UA3
+  usecase "Registrar, editar y eliminar\nproveedores (/proveedores)" as UA4
+  usecase "Crear, editar y eliminar\nusuarios con rol (/usuarios)" as UA5
+  usecase "Cifrar contraseñas\ncon SHA-256" as UA6
+  usecase "Generar reporte de ventas\ny stock bajo (/reportes)" as UA7
+}
+
+A --> UA1
+A --> UA2
+A --> UA3
+A --> UA4
+A --> UA5
+A --> UA7
+
+UA2 ..> UA3 : <<extend>>
+UA5 ..> UA6 : <<include>>
+UA1 ..> UA7 : <<extend>>
+@enduml

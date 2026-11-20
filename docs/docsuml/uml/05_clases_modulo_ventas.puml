@@ -1,0 +1,50 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class VentaController <<Controller>> {
+  - productoRepository : ProductoRepository
+  - ventaService : VentaService
+  + mostrarCaja(error : String, model : Model) : String
+  + cobrarVenta(items : List<ItemCarrito>) : ResponseEntity<?>
+  + verTicket(id : Long, model : Model, ra : RedirectAttributes) : String
+}
+
+class VentaService <<Service>> {
+  - ventaRepository : VentaRepository
+  - productoRepository : ProductoRepository
+  + procesarVenta(items : List<ItemCarrito>) : Venta
+  + obtenerHistorialVentas() : List<Venta>
+  + calcularTotalCaja() : double
+  + buscarPorId(id : Long) : Optional<Venta>
+}
+
+class ItemCarrito <<Record>> {
+  + productoId : Long
+  + cantidad : Integer
+}
+
+interface VentaRepository <<Repository>> {
+  + save(venta : Venta) : Venta
+  + findAll(sort : Sort) : List<Venta>
+  + findById(id : Long) : Optional<Venta>
+}
+
+interface DetalleVentaRepository <<Repository>> {
+  + save(detalle : DetalleVenta) : DetalleVenta
+}
+
+interface ProductoRepository <<Repository>> {
+  + findAll() : List<Producto>
+  + findById(id : Long) : Optional<Producto>
+  + save(producto : Producto) : Producto
+}
+
+VentaController --> VentaService : delega cobro
+VentaController --> ProductoRepository : consulta catálogo
+VentaService --> VentaRepository : persiste ventas
+VentaService --> ProductoRepository : descuenta stock
+VentaService ..> ItemCarrito : procesa
+VentaRepository ..> DetalleVentaRepository : cascade ALL
+@enduml

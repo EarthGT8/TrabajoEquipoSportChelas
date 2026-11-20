@@ -1,0 +1,30 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+left to right direction
+
+actor "Cajero" as C
+actor "Administrador" as A
+A --|> C
+
+rectangle "Módulo Punto de Venta (/pos)" {
+  usecase "Filtrar catálogo en vivo" as UC1
+  usecase "Gestionar carrito\n(Agregar, +/- , Vaciar)" as UC2
+  usecase "Validar stock disponible" as UC3
+  usecase "Validar monto recibido\ny calcular cambio" as UC4
+  usecase "Procesar cobro y\ndescontar inventario" as UC5
+  usecase "Visualizar e imprimir\nticket (/pos/ticket/{id})" as UC6
+  usecase "Consultar historial de\nventas (Corte de Caja)" as UC7
+}
+
+C --> UC1
+C --> UC2
+C --> UC5
+C --> UC6
+C --> UC7
+
+UC2 ..> UC3 : <<include>>
+UC5 ..> UC4 : <<include>>
+UC5 ..> UC3 : <<include>>
+UC5 ..> UC6 : <<extend>>
+@enduml

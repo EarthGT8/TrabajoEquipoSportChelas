@@ -1,0 +1,49 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class ProductoController <<Controller>> {
+  - productoService : ProductoService
+  - categoriaService : CategoriaService
+  + mostrarInventario(model : Model) : String
+  + cargarEdicion(id : Long, model : Model, ra : RedirectAttributes) : String
+  + guardarProducto(producto : Producto, categoriaId : Long, ra : RedirectAttributes) : String
+  + guardarCategoria(categoria : Categoria, ra : RedirectAttributes) : String
+  + eliminarProducto(id : Long, ra : RedirectAttributes) : String
+}
+
+class ProductoService <<Service>> {
+  - productoRepository : ProductoRepository
+  + obtenerTodos() : List<Producto>
+  + buscarPorId(id : Long) : Optional<Producto>
+  + guardarProducto(producto : Producto) : Producto
+  + eliminarProducto(id : Long) : void
+  + descontarStock(productoId : Long, cantidadVendida : int) : void
+}
+
+class CategoriaService <<Service>> {
+  - categoriaRepository : CategoriaRepository
+  + obtenerTodas() : List<Categoria>
+  + buscarPorId(id : Long) : Optional<Categoria>
+  + guardarCategoria(categoria : Categoria) : Categoria
+}
+
+interface ProductoRepository <<Repository>> {
+  + findByCodigoBarras(codigoBarras : String) : Optional<Producto>
+  + findAll() : List<Producto>
+  + save(producto : Producto) : Producto
+  + deleteById(id : Long) : void
+}
+
+interface CategoriaRepository <<Repository>> {
+  + findAll() : List<Categoria>
+  + findById(id : Long) : Optional<Categoria>
+  + save(categoria : Categoria) : Categoria
+}
+
+ProductoController --> ProductoService
+ProductoController --> CategoriaService
+ProductoService --> ProductoRepository
+CategoriaService --> CategoriaRepository
+@enduml

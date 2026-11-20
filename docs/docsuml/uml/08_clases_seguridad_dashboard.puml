@@ -1,0 +1,45 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class PasswordUtil <<Utility>> {
+  + {static} cifrarSHA256(textoPlano : String) : String
+}
+
+class AuthInterceptor <<Component>> {
+  + preHandle(request : HttpServletRequest, response : HttpServletResponse, handler : Object) : boolean
+}
+
+class WebConfig <<Configuration>> {
+  - authInterceptor : AuthInterceptor
+  + addInterceptors(registry : InterceptorRegistry) : void
+}
+
+class UsuarioInitializer <<Configuration>> {
+  + inicializarUsuarios(usuarioRepository : UsuarioRepository) : CommandLineRunner
+}
+
+class AuthController <<Controller>> {
+  - usuarioService : UsuarioService
+  + inicio(session : HttpSession) : String
+  + mostrarLogin(error : String, logout : String, model : Model) : String
+  + procesarLogin(username : String, password : String, session : HttpSession, model : Model) : String
+  + cerrarSesion(session : HttpSession) : String
+}
+
+class DashboardController <<Controller>> {
+  - productoRepository : ProductoRepository
+  - proveedorRepository : ProveedorRepository
+  - usuarioRepository : UsuarioRepository
+  - ventaService : VentaService
+  + mostrarDashboard(model : Model) : String
+  + mostrarReportes(model : Model) : String
+}
+
+WebConfig --> AuthInterceptor : registra reglas
+AuthController --> PasswordUtil : indirecto vía UsuarioService
+UsuarioInitializer ..> PasswordUtil : cifra iniciales
+AuthInterceptor ..> AuthController : redirige a /login
+DashboardController ..> AuthInterceptor : protegido (solo ADMIN)
+@enduml

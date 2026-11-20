@@ -1,0 +1,44 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+
+actor "Cajero / Admin" as U
+participant "Vista POS\n(pos.html + JS)" as V
+participant "VentaController" as C
+participant "VentaService\n(@Transactional)" as S
+database "H2 Database\n(productos / ventas)" as DB
+
+U -> V : Agrega productos al carrito e ingresa "Paga con ($)"
+U -> V : Presiona "Cobrar Venta"
+V -> V : Valida carrito no vacío y pago >= total
+
+alt Monto vacío o insuficiente
+  V --> U : Alerta roja (rechaza cobro)
+else Monto válido
+  V -> C : POST /pos/cobrar (JSON List<ItemCarrito>)
+  activate C
+  C -> S : procesarVenta(items)
+  activate S
+  loop Por cada ItemCarrito
+    S -> DB : findById(productoId)
+    DB --> S : Producto
+    alt Stock suficiente
+      S -> S : stock = stock - cantidad\nsubtotal = precio * cantidad
+      S -> DB : UPDATE productos (nuevo stock)
+    else Stock insuficiente
+      S --> C : throw IllegalArgumentException (Rollback)
+      C --> V : HTTP 400 { error }
+      V --> U : Muestra alerta roja en caja
+    end
+  end
+  S -> DB : INSERT ventas + detalle_ventas
+  DB --> S : Venta guardada (ID consecutivo)
+  S --> C : Venta
+  deactivate S
+  C -> C : finally -> Log [AUDITORIA CAJA]
+  C --> V : HTTP 200 { ventaId, total, mensaje }
+  deactivate C
+  V --> U : Muestra ticket # y cambio a entregar
+  V -> V : Recarga /pos (stock actualizado y corte de caja)
+end
+@enduml

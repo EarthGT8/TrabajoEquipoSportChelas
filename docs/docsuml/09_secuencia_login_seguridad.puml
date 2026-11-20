@@ -1,0 +1,45 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+
+actor "Usuario\n(Admin / Cajero)" as U
+participant "Navegador\n(login.html)" as V
+participant "AuthInterceptor" as I
+participant "AuthController" as C
+participant "UsuarioService" as S
+participant "PasswordUtil" as P
+database "H2 Database\n(usuarios)" as DB
+
+== Intento de acceso directo sin sesión ==
+U -> V : Escribe URL /inventario
+V -> I : GET /inventario
+I -> I : Verifica HttpSession (null)
+I --> V : Redirect /login?error=sesion
+V --> U : Muestra alerta "Debes iniciar sesión"
+
+== Proceso de autenticación ==
+U -> V : Ingresa username y password
+V -> C : POST /login
+activate C
+C -> S : autenticar(username, password)
+activate S
+S -> DB : findByUsername(username)
+DB --> S : Usuario (con hash SHA-256)
+S -> P : cifrarSHA256(password)
+P --> S : hashIngresado
+alt Hash coincide
+  S --> C : Usuario autenticado
+  C -> C : session.setAttribute("usuarioLogueado", usuario)
+  alt Rol == ADMIN
+    C --> V : Redirect /dashboard
+  else Rol == CAJERO
+    C --> V : Redirect /pos
+  end
+else Usuario inexistente o hash distinto
+  S --> C : throw IllegalArgumentException
+  C --> V : Render login.html con mensajeError
+end
+deactivate S
+C -> C : finally -> Log [AUDITORIA LOGIN]
+deactivate C
+@enduml

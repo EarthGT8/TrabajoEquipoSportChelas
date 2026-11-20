@@ -1,0 +1,57 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class UsuarioController <<Controller>> {
+  - usuarioService : UsuarioService
+  + mostrarUsuarios(model : Model) : String
+  + cargarEdicion(id : Long, model : Model, ra : RedirectAttributes) : String
+  + guardarUsuario(usuario : Usuario, ra : RedirectAttributes) : String
+  + eliminarUsuario(id : Long, session : HttpSession, ra : RedirectAttributes) : String
+}
+
+class UsuarioService <<Service>> {
+  - usuarioRepository : UsuarioRepository
+  + obtenerTodos() : List<Usuario>
+  + buscarPorId(id : Long) : Optional<Usuario>
+  + autenticar(username : String, passwordPlano : String) : Usuario
+  + guardarUsuario(usuario : Usuario) : Usuario
+  + eliminarUsuario(id : Long, idSesionActual : Long) : void
+}
+
+interface UsuarioRepository <<Repository>> {
+  + findByUsername(username : String) : Usuario
+  + findAll() : List<Usuario>
+  + save(usuario : Usuario) : Usuario
+  + deleteById(id : Long) : void
+}
+
+class ProveedorController <<Controller>> {
+  - proveedorService : ProveedorService
+  + mostrarProveedores(model : Model) : String
+  + cargarEdicion(id : Long, model : Model, ra : RedirectAttributes) : String
+  + guardarProveedor(proveedor : Proveedor, ra : RedirectAttributes) : String
+  + eliminarProveedor(id : Long, ra : RedirectAttributes) : String
+}
+
+class ProveedorService <<Service>> {
+  - proveedorRepository : ProveedorRepository
+  + obtenerTodos() : List<Proveedor>
+  + buscarPorId(id : Long) : Optional<Proveedor>
+  + guardarProveedor(proveedor : Proveedor) : Proveedor
+  + eliminarProveedor(id : Long) : void
+}
+
+interface ProveedorRepository <<Repository>> {
+  + findAll() : List<Proveedor>
+  + findById(id : Long) : Optional<Proveedor>
+  + save(proveedor : Proveedor) : Proveedor
+  + deleteById(id : Long) : void
+}
+
+UsuarioController --> UsuarioService
+UsuarioService --> UsuarioRepository
+ProveedorController --> ProveedorService
+ProveedorService --> ProveedorRepository
+@enduml

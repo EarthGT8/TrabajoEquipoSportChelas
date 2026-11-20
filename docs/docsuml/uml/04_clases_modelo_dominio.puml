@@ -1,0 +1,57 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class Usuario <<Entity>> {
+  - id : Long
+  - nombreCompleto : String
+  - username : String
+  - password : String
+  - rol : String
+}
+
+class Proveedor <<Entity>> {
+  - id : Long
+  - empresa : String
+  - nombreContacto : String
+  - telefono : String
+  - email : String
+}
+
+class Categoria <<Entity>> {
+  - id : Long
+  - nombre : String
+  - descripcion : String
+}
+
+class Producto <<Entity>> {
+  - id : Long
+  - nombre : String
+  - codigoBarras : String
+  - precio : Double
+  - precioCompra : Double
+  - stock : Integer
+  - stockMinimo : Integer
+  - categoria : Categoria
+}
+
+class Venta <<Entity>> {
+  - id : Long
+  - fechaHora : LocalDateTime
+  - total : Double
+  - detalles : List<DetalleVenta>
+}
+
+class DetalleVenta <<Entity>> {
+  - id : Long
+  - producto : Producto
+  - venta : Venta
+  - cantidad : Integer
+  - subtotal : Double
+}
+
+Categoria "0..1" <-- "*" Producto : pertenece a
+Venta "1" *-- "1..*" DetalleVenta : contiene
+Producto "1" <-- "*" DetalleVenta : referenciado en
+@enduml

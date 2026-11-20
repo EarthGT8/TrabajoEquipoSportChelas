@@ -1,0 +1,36 @@
+@startuml
+skinparam dpi 300
+skinparam shadowing false
+left to right direction
+
+actor "Cajero" as C
+actor "Administrador" as A
+
+A --|> C
+
+rectangle "Sistema Punto de Venta - Papelería Vero" {
+  usecase "CU01: Iniciar y Cerrar Sesión\n(SHA-256)" as CU1
+  usecase "CU02: Buscar Productos\n(Nombre / Código)" as CU2
+  usecase "CU03: Registrar Venta y\nCalcular Cambio" as CU3
+  usecase "CU04: Generar e Imprimir\nTicket de Venta" as CU4
+  usecase "CU05: Consultar Corte de Caja" as CU5
+  usecase "CU06: Gestionar Inventario\n(CRUD Productos y Categorías)" as CU6
+  usecase "CU07: Gestionar Proveedores\n(CRUD)" as CU7
+  usecase "CU08: Administrar Usuarios\ny Roles (CRUD)" as CU8
+  usecase "CU09: Consultar Dashboard y\nReportes de Ventas/Stock" as CU9
+}
+
+C --> CU1
+C --> CU2
+C --> CU3
+C --> CU4
+C --> CU5
+
+A --> CU6
+A --> CU7
+A --> CU8
+A --> CU9
+
+CU3 ..> CU2 : <<include>>
+CU3 ..> CU4 : <<extend>>
+@enduml
